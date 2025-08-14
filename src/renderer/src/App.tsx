@@ -1,16 +1,32 @@
 import electronLogo from './assets/electron.svg'
-import { useSelector, useDispatch } from 'react-redux'
-import { RootState, setData } from '@shared/store'
+
+// Zustand
+import { useStore } from './hooks/useStore'
+import { useDispatch } from '@zubridge/electron'
+import type { RootState } from '@types'
+
+// Actions
+import { setData } from '../../features/app/appSlice'
+
+// Services
 import { showCustomDialog } from './services'
+
+// Hooks
 import { useMenuEvents } from './hooks/useMenuEvents'
 import { useFileOperations } from './hooks/useFileOperations'
-function App(): React.JSX.Element {
-  const dispatch = useDispatch()
-  const { data, isBusy } = useSelector((state: RootState) => state.app)
 
-  // Custom hooks handle all the complex logic
+function App(): React.JSX.Element {
+  // Zustand State Management
+  const dispatch = useDispatch<RootState>()
+  const { data, isBusy } = useStore((state: RootState) => state.app)
+
+  // Handle app menu events (File > Open, Save, etc.)
   useMenuEvents()
+
+  // File operations
   const { openFile, saveFile, closeFile } = useFileOperations()
+
+  // Handlers
   const onClickMessageBox = async (): Promise<void> => {
     const response = await showCustomDialog('How are you today', ['Good', 'Bad'])
     if (response === 0) {
@@ -47,7 +63,7 @@ function App(): React.JSX.Element {
         <textarea
           value={data || ''}
           onChange={(e) => dispatch(setData(e.target.value))}
-          placeholder="Type here or open a file..."
+          placeholder="Type here or open/import a file..."
         />
       </div>
     </div>

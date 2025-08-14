@@ -1,13 +1,14 @@
 import { useEffect, useCallback } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  RootState,
-  setData,
-  setIsBusy,
-  clearData,
-  setCurrentFilePath,
-  addRecentFile
-} from '@shared/store'
+// Remove Redux imports
+// import { useDispatch, useSelector } from 'react-redux'
+// import { RootState, setData, setIsBusy, clearData, setCurrentFilePath, addRecentFile } from '@types'
+
+// Add Zustand bridge imports
+import { useDispatch } from '@zubridge/electron'
+import { useStore } from './useStore'
+import type { RootState } from '@types'
+import { setData, setIsBusy, clearData, setCurrentFilePath } from '../../../features/app/appSlice'
+import { addRecentFile } from '../../../features/settings/settingsSlice'
 import {
   readFile,
   writeFile,
@@ -25,8 +26,9 @@ import {
 const { api } = window
 
 export function useMenuEvents(): void {
-  const dispatch = useDispatch()
-  const { data, currentFilePath } = useSelector((state: RootState) => state.app)
+  // Convert to Zustand bridge
+  const dispatch = useDispatch<RootState>()
+  const { data, currentFilePath } = useStore((state: RootState) => state.app)
 
   const handleMenuOpen = useCallback(
     async (path: string | undefined) => {
@@ -125,6 +127,7 @@ export function useMenuEvents(): void {
     async ({ format }: { format: string }) => {
       dispatch(setIsBusy(true))
       try {
+        if (!data) return
         const path = await showExportFileDialog(format)
         if (path) {
           await exportFile(format, path, data)

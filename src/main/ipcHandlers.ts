@@ -30,7 +30,8 @@ import {
 
 // Redux
 import { Store } from '@reduxjs/toolkit'
-import { RootState, addRecentFile } from '@shared/store'
+import { RootState } from './store'
+import { addRecentFile } from '../features/settings/settingsSlice'
 
 // Zip / Unzip
 import archiver from 'archiver'

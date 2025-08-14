@@ -31,5 +31,7 @@ declare global {
       onMenuSaveAs(callback: (...args) => void): () => void
       onMenuExport(callback: (...args) => void): () => void
     }
+    // TODO: Define zubridge definitions here
+    // zubridge: {}
   }
 }

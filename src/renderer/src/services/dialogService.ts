@@ -44,7 +44,7 @@ export async function showImportFileDialog(): Promise<string | undefined> {
   return filePaths[0]
 }
 
-export async function showSaveAsDialog(): Promise<string | undefined> {
+export async function showSaveAsDialog(): Promise<string | null> {
   // Get current datetimestamp YYYY-DD-MM-HH-MM-SS
   const timestamp = generateDateTimeStamp()
 
@@ -56,11 +56,11 @@ export async function showSaveAsDialog(): Promise<string | undefined> {
 
   if (canceled || !filePath) {
     console.log('Save as operation canceled')
-    return undefined
+    return null
   }
   return filePath
 }
-export async function showExportFileDialog(format: string): Promise<string | undefined> {
+export async function showExportFileDialog(format: string): Promise<string | null> {
   console.log(`Exporting as: ${format}`)
 
   let filters: { name: string; extensions: string[] }[] = []
@@ -88,7 +88,7 @@ export async function showExportFileDialog(format: string): Promise<string | und
 
   if (canceled || !filePath) {
     console.log('Export operation canceled')
-    return undefined
+    return null
   }
   return filePath
 }

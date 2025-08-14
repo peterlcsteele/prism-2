@@ -6,8 +6,9 @@ import icon from '../../resources/icon.png?asset'
 import { setupAppMenu } from './menu'
 import { setupIpcHandlers } from './ipcHandlers'
 
-// Redux store
-import { store } from '@shared/store/main'
+// Zustand store
+import { createReduxBridge } from '@zubridge/electron/main'
+import { store } from './store'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -24,6 +25,13 @@ function createWindow(): void {
       sandbox: false
     }
   })
+
+  // Zustand: Instantiate bridge
+  // const { unsubscribe, dispatch } = createReduxBridge(store, [mainWindow])
+  const { unsubscribe } = createReduxBridge(store, [mainWindow])
+
+  // Zustand: Cleanup
+  app.on('quit', () => unsubscribe())
 
   mainWindow.on('ready-to-show', () => {
     // Show window
@@ -54,7 +62,7 @@ function createWindow(): void {
   setupIpcHandlers(store)
 
   // Subscribe to store changes and update menu
-  const updateWindowTitle = () => {
+  const updateWindowTitle = (): void => {
     const state = store.getState()
     // Get current filename
     const { currentFilePath } = state.app

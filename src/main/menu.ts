@@ -1,8 +1,7 @@
 import { app, BrowserWindow, Menu, MenuItemConstructorOptions, shell } from 'electron'
 import { Store } from '@reduxjs/toolkit'
-import { RootState } from '../shared/store'
 
-let currentStore: Store<RootState> | null = null
+import type { RootState } from './store'
 
 const buildMenuTemplate = (
   focusedWindow: BrowserWindow,
@@ -166,13 +165,11 @@ const buildMenuTemplate = (
 ]
 
 export const setupAppMenu = (store: Store<RootState>): void => {
-  currentStore = store
-
   // Get currently focused window
   const focusedWindow = BrowserWindow.getAllWindows()[0]!
 
   // Subscribe to store changes and update menu
-  const updateMenu = () => {
+  const updateMenu = (): void => {
     const state = store.getState()
     const newMenu = Menu.buildFromTemplate(buildMenuTemplate(focusedWindow, state))
     Menu.setApplicationMenu(newMenu)

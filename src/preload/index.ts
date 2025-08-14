@@ -1,6 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import 'electron-redux/preload'
+import { preloadBridge } from '@zubridge/electron/preload'
+
+const { handlers: zubridgeHandlers } = preloadBridge()
 
 // Custom APIs for renderer
 const api = {
@@ -66,6 +68,7 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
+    contextBridge.exposeInMainWorld('zubridge', zubridgeHandlers)
   } catch (error) {
     console.error(error)
   }
@@ -74,4 +77,6 @@ if (process.contextIsolated) {
   window.electron = electronAPI
   // @ts-ignore (define in dts)
   window.api = api
+  /// @ts-ignore (define in dts)
+  window.zubridge = zubridgeHandlers
 }

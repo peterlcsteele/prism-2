@@ -1,13 +1,22 @@
 import { useCallback } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  RootState,
-  setData,
-  setIsBusy,
-  setCurrentFilePath,
-  addRecentFile,
-  clearData
-} from '@shared/store'
+// Remove Redux imports
+// import { useDispatch, useSelector } from 'react-redux'
+// import {
+//   RootState,
+//   setData,
+//   setIsBusy,
+//   setCurrentFilePath,
+//   addRecentFile,
+//   clearData
+// } from '@shared/store'
+
+// Add Zustand bridge imports
+import { useDispatch } from '@zubridge/electron'
+import { useStore } from './useStore'
+import type { RootState } from '@types'
+import { setData, setIsBusy, setCurrentFilePath, clearData } from '../../../features/app/appSlice'
+import { addRecentFile } from '../../../features/settings/settingsSlice'
+// Services
 import {
   readFile,
   writeFile,
@@ -21,8 +30,9 @@ export function useFileOperations(): {
   saveFile: (saveAs?: boolean) => Promise<void>
   closeFile: () => void
 } {
-  const dispatch = useDispatch()
-  const { data, currentFilePath } = useSelector((state: RootState) => state.app)
+  // Convert to Zustand bridge
+  const dispatch = useDispatch<RootState>()
+  const { data, currentFilePath } = useStore((state: RootState) => state.app)
 
   const openFile = useCallback(
     async (path?: string) => {

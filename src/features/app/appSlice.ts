@@ -4,12 +4,14 @@ export interface AppState {
   data: string | null
   isBusy: boolean
   currentFilePath: string | null
+  hasUnsavedChanges: boolean
 }
 
 const initialState: AppState = {
   data: null,
   isBusy: false,
-  currentFilePath: null
+  currentFilePath: null,
+  hasUnsavedChanges: false
 }
 
 export const appSlice = createSlice({

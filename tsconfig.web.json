@@ -5,18 +5,19 @@
     "src/renderer/src/**/*",
     "src/renderer/src/**/*.tsx",
     "src/preload/*.d.ts",
-    "src/shared/**/*" // Added by PS
+    "src/features/**/*",
+    "src/types/**/*"
+    //"src/main/slices"
   ],
   "compilerOptions": {
     "composite": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@renderer/*": [
-        "src/renderer/src/*"
-      ],
-      "@shared/*": ["src/shared/*"], // Added by PS
-      "@types": ["src/shared/types/index.ts"], // Added by PS | Note: Path to single file, not wildcard
+      "@renderer/*": ["src/renderer/src/*"],
+      "@shared/*": ["src/shared/*"],
+      "@types": ["src/types/index.ts"],
+      "@types/*": ["src/types/*"]
     }
   }
 }

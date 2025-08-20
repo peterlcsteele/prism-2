@@ -4,8 +4,7 @@
     "electron.vite.config.*",
     "src/main/**/*",
     "src/preload/**/*",
-    "src/features/**/*",
-    "src/types/**/*"
+    "src/shared/**/*"
   ],
   "compilerOptions": {
     "baseUrl": ".", // Added by PS
@@ -13,8 +12,8 @@
     "types": ["electron-vite/node"],
     "paths": { // Added by PS
       "@shared/*": ["src/shared/*"],
-      "@types": ["src/types/index.ts"],
-      "@types/*": ["src/types/*"]
-    }
+      "@/*": ["./src/renderer/src/*"]
+    },
+    "moduleResolution": "bundler"
   }
 }

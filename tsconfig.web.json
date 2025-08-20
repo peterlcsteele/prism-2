@@ -5,9 +5,7 @@
     "src/renderer/src/**/*",
     "src/renderer/src/**/*.tsx",
     "src/preload/*.d.ts",
-    "src/features/**/*",
-    "src/types/**/*"
-    //"src/main/slices"
+    "src/shared/**/*", // Added by PS - Anything shared between main and renderer
   ],
   "compilerOptions": {
     "composite": true,
@@ -15,9 +13,7 @@
     "baseUrl": ".",
     "paths": {
       "@renderer/*": ["src/renderer/src/*"],
-      "@shared/*": ["src/shared/*"],
-      "@types": ["src/types/index.ts"],
-      "@types/*": ["src/types/*"]
-    }
+      "@shared/*": ["src/shared/*"], // Added by PS - Anything shared between main and renderer
+    },
   }
 }

@@ -1,22 +1,62 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { createStore, StateCreator } from 'zustand/vanilla'
 
-// Slices
-import { appSlice } from '../features/app/appSlice.js'
-import { settingsSlice } from '../features/settings/settingsSlice.js'
+import type { AppSlice, SettingsSlice, StoreState } from '@shared/types/store'
 
-// Create the Redux store
-export const store = configureStore({
-  reducer: {
-    app: appSlice.reducer,
-    settings: settingsSlice.reducer
+export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (set) => ({
+  data: null,
+  isBusy: false,
+  currentFilePath: null,
+  hasUnsavedChanges: false,
+  setData: (data: string | null) => {
+    set((state) => ({
+      app: { ...state.app, data }
+    }))
   },
-  // Optional middleware configuration
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false // Helpful for Electron IPC integration
-    })
+  setIsBusy: (isBusy: boolean) => {
+    set((state) => ({
+      app: { ...state.app, isBusy }
+    }))
+  },
+  setCurrentFilePath: (currentFilePath: string | null) =>
+    set((state) => ({
+      app: { ...state.app, currentFilePath }
+    })),
+
+  clearData: () =>
+    set((state) => ({
+      app: { ...state.app, data: null, currentFilePath: null }
+    }))
 })
 
-// Type inference for your application state
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export const createSettingsSlice: StateCreator<StoreState, [], [], SettingsSlice> = (set) => ({
+  theme: 'light',
+  autoSave: true,
+  recentFiles: [],
+  setTheme: (theme: 'light' | 'dark') =>
+    set((state) => ({
+      settings: { ...state.settings, theme }
+    })),
+  setAutoSave: (autoSave: boolean) =>
+    set((state) => ({
+      settings: { ...state.settings, autoSave }
+    })),
+  addRecentFile: (newFile: string) =>
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        recentFiles: [newFile, ...state.settings.recentFiles.filter((f) => f !== newFile)].slice(
+          0,
+          10
+        )
+      }
+    })),
+  clearRecentFiles: () =>
+    set((state) => ({
+      settings: { ...state.settings, recentFiles: [] }
+    }))
+})
+
+export const store = createStore<StoreState>()((...args) => ({
+  app: createAppSlice(...args),
+  settings: createSettingsSlice(...args)
+}))

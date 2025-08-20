@@ -1,5 +1,4 @@
 import { createUseStore } from '@zubridge/electron'
-import type { RootState } from '@types'
+import type { StoreState } from '@shared/types'
 
-// Create a hook to access the store
-export const useStore = createUseStore<RootState>()
+export const useStore = createUseStore<StoreState>()

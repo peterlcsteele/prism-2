@@ -6,6 +6,12 @@ const { handlers: zubridgeHandlers } = preloadBridge()
 
 // Custom APIs for renderer
 const api = {
+  openFile: (filePath: string) => {
+    ipcRenderer.send('open-file', filePath)
+  },
+  saveFile: () => {
+    ipcRenderer.send('save-file')
+  },
   // Send events
   showOpenDialog: async (options) => {
     return ipcRenderer.invoke('dialog:show-open-dialog', options)

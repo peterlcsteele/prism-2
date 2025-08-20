@@ -3,14 +3,29 @@ import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+// Zustand store
+// import { createZustandBridge } from '@zubridge/electron/main'
+import { store } from './store'
+import { bridge } from './bridge'
+// import { handlers } from '@shared/store/handlers' // TO BE REMOVED
+// Menu
 import { setupAppMenu } from './menu'
+// IPC
 import { setupIpcHandlers } from './ipcHandlers'
 
-// Zustand store
-import { createReduxBridge } from '@zubridge/electron/main'
-import { store } from './store'
+/* NEW */
 
-let mainWindow: BrowserWindow | null = null
+// import { attachCounterHandlers } from './features/counter/index.js'
+// import { attachThemeHandlers } from './features/theme/index.js'
+
+/**
+ * Creates a bridge using the basic approach
+ * In this approach, handlers are attached to the store object
+ */
+
+/* NEW */
+
+let mainWindow: BrowserWindow
 
 function createWindow(): void {
   // Create the browser window.
@@ -26,12 +41,11 @@ function createWindow(): void {
     }
   })
 
-  // Zustand: Instantiate bridge
-  // const { unsubscribe, dispatch } = createReduxBridge(store, [mainWindow])
-  const { unsubscribe } = createReduxBridge(store, [mainWindow])
+  // Subscribe window to bridge
+  bridge.subscribe([mainWindow])
 
   // Zustand: Cleanup
-  app.on('quit', () => unsubscribe())
+  app.on('quit', () => bridge.unsubscribe())
 
   mainWindow.on('ready-to-show', () => {
     // Show window
@@ -58,8 +72,8 @@ function createWindow(): void {
 
   // Setup app menu with store
   setupAppMenu(store)
-  // Setup IPC handlers with store
-  setupIpcHandlers(store)
+  // Setup IPC handlers (store no longer required as arg)
+  setupIpcHandlers()
 
   // Subscribe to store changes and update menu
   const updateWindowTitle = (): void => {

@@ -1,14 +1,9 @@
 import { useEffect, useCallback } from 'react'
-// Remove Redux imports
-// import { useDispatch, useSelector } from 'react-redux'
-// import { RootState, setData, setIsBusy, clearData, setCurrentFilePath, addRecentFile } from '@types'
 
 // Add Zustand bridge imports
-import { useDispatch } from '@zubridge/electron'
 import { useStore } from './useStore'
-import type { RootState } from '@types'
-import { setData, setIsBusy, clearData, setCurrentFilePath } from '../../../features/app/appSlice'
-import { addRecentFile } from '../../../features/settings/settingsSlice'
+
+// import type { StoreState } from '@types'
 import {
   readFile,
   writeFile,
@@ -26,77 +21,74 @@ import {
 const { api } = window
 
 export function useMenuEvents(): void {
-  // Convert to Zustand bridge
-  const dispatch = useDispatch<RootState>()
-  const { data, currentFilePath } = useStore((state: RootState) => state.app)
+  // Use store hook
+  const { data, currentFilePath } = useStore((store) => store.app)
 
   const handleMenuOpen = useCallback(
     async (path: string | undefined) => {
-      dispatch(setIsBusy(true))
+      setIsBusy!(true)
       try {
         if (!path) {
           path = await showOpenFileDialog()
         }
         if (path) {
           const fileData = await readFile(path)
-          dispatch(setData(fileData))
-          dispatch(setCurrentFilePath(path))
-          dispatch(addRecentFile(path))
+          setData!(fileData)
+          setCurrentFilePath!(path)
+          addRecentFile!(path)
         }
       } finally {
-        dispatch(setIsBusy(false))
+        setIsBusy!(false)
       }
     },
-    [dispatch]
+    [setIsBusy, setData, addRecentFile, setCurrentFilePath]
   )
 
   const handleMenuImport = useCallback(
     async ({ format }: { format: string }) => {
-      dispatch(setIsBusy(true))
+      setIsBusy!(true)
       try {
         const path = await showImportFileDialog()
         if (path) {
           const fileData = await importFile(path, format)
-          dispatch(setData(fileData))
+          setData(fileData)
         }
       } finally {
-        dispatch(setIsBusy(false))
+        setIsBusy!(false)
       }
     },
-    [dispatch]
+    [setIsBusy, setData]
   )
 
   const handleMenuClose = useCallback(() => {
-    dispatch(clearData())
-  }, [dispatch])
+    clearData!()
+  }, [clearData])
 
   const handleMenuSave = useCallback(async () => {
     if (!data) {
       console.log('No data to save')
       return
     }
-
-    dispatch(setIsBusy(true))
+    setIsBusy!(true)
     let path = currentFilePath
     if (!path) {
       path = await showSaveAsDialog()
       if (!path) {
-        dispatch(setIsBusy(false))
+        setIsBusy!(false)
         return
       }
     }
-
     try {
       await writeFile(path, data)
-      dispatch(setCurrentFilePath(path))
-      dispatch(addRecentFile(path))
+      setCurrentFilePath!(path)
+      addRecentFile!(path)
     } catch (error) {
       console.error('Error saving file:', error)
       await showErrorDialog('Save failed', `Failed to save file: ${error}`)
     } finally {
-      dispatch(setIsBusy(false))
+      setIsBusy!(false)
     }
-  }, [data, currentFilePath, dispatch])
+  }, [data, currentFilePath, setIsBusy, addRecentFile, setCurrentFilePath])
 
   const handleMenuSaveAs = useCallback(async () => {
     if (!data) {
@@ -104,28 +96,28 @@ export function useMenuEvents(): void {
       return
     }
 
-    dispatch(setIsBusy(true))
+    setIsBusy!(true)
     const path = await showSaveAsDialog()
     if (!path) {
-      dispatch(setIsBusy(false))
+      setIsBusy!(false)
       return
     }
 
     try {
-      await writeFile(path, data)
-      dispatch(setCurrentFilePath(path))
-      dispatch(addRecentFile(path))
+      await writeFile(path, data as string)
+      setCurrentFilePath!(path)
+      addRecentFile!(path)
     } catch (error) {
       console.error('Error saving file:', error)
       await showErrorDialog('Save failed', `Failed to save file: ${error}`)
     } finally {
-      dispatch(setIsBusy(false))
+      setIsBusy!(false)
     }
-  }, [data, dispatch])
+  }, [data, setIsBusy, setCurrentFilePath, addRecentFile])
 
   const handleMenuExport = useCallback(
     async ({ format }: { format: string }) => {
-      dispatch(setIsBusy(true))
+      setIsBusy!(true)
       try {
         if (!data) return
         const path = await showExportFileDialog(format)
@@ -140,10 +132,10 @@ export function useMenuEvents(): void {
         console.error('Error exporting file:', error)
         await showErrorDialog('Export failed', `Failed to export file: ${error}`)
       } finally {
-        dispatch(setIsBusy(false))
+        setIsBusy!(false)
       }
     },
-    [data, dispatch]
+    [data, setIsBusy]
   )
 
   useEffect(() => {

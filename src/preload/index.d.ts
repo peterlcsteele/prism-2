@@ -7,12 +7,15 @@ import {
   SaveDialogOptions,
   SaveDialogReturnValue
 } from 'electron'
-import { ReadFileParams, WriteFileParams, MenuState } from '@types'
+import { ReadFileParams, WriteFileParams, MenuState } from '@shared/types'
 
 declare global {
   interface Window {
     electron: ElectronAPI
     api: {
+      // New
+      openFile(filePath?: string): void
+      saveFile(): void
       // Dialog
       showOpenDialog(options: OpenDialogOptions): Promise<OpenDialogReturnValue>
       showMessageBox(options: MessageBoxOptions): Promise<MessageBoxReturnValue>

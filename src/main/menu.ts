@@ -1,11 +1,12 @@
 import { app, BrowserWindow, Menu, MenuItemConstructorOptions, shell } from 'electron'
-import { Store } from '@reduxjs/toolkit'
+import { StoreApi } from 'zustand/vanilla'
+import type { StoreState } from '@shared/types'
 
-import type { RootState } from './store'
+import { openFile, importFile, saveFile, showSettings, exportFile } from './mainProcesses'
 
 const buildMenuTemplate = (
   focusedWindow: BrowserWindow,
-  state: RootState
+  state: StoreState
 ): MenuItemConstructorOptions[] => [
   {
     label: app.getName(),
@@ -15,6 +16,12 @@ const buildMenuTemplate = (
       },
       {
         type: 'separator'
+      },
+      {
+        label: 'Settings...',
+        click: () => {
+          showSettings()
+        }
       },
       {
         label: 'Quit',
@@ -33,7 +40,7 @@ const buildMenuTemplate = (
         accelerator: 'CmdOrCtrl+O',
         enabled: !state.app.isBusy,
         click: () => {
-          focusedWindow.webContents.send('menu:open')
+          openFile()
         }
       },
       {
@@ -54,7 +61,7 @@ const buildMenuTemplate = (
         accelerator: 'CmdOrCtrl+I',
         enabled: !state.app.isBusy,
         click: () => {
-          focusedWindow.webContents.send('menu:import', { format: 'learn9' })
+          importFile()
         }
       },
       {
@@ -76,7 +83,7 @@ const buildMenuTemplate = (
         accelerator: 'CmdOrCtrl+S',
         enabled: state.app.data !== null && !state.app.isBusy,
         click: () => {
-          focusedWindow.webContents.send('menu:save')
+          saveFile()
         }
       },
       {
@@ -84,7 +91,7 @@ const buildMenuTemplate = (
         accelerator: 'CmdOrCtrl+Shift+S',
         enabled: state.app.data !== null && !state.app.isBusy,
         click: () => {
-          focusedWindow.webContents.send('menu:save-as')
+          saveFile()
         }
       },
       {
@@ -98,7 +105,7 @@ const buildMenuTemplate = (
             label: 'HTML',
             accelerator: 'CmdOrCtrl+0',
             click: () => {
-              focusedWindow.webContents.send('menu:export', { format: 'html' })
+              exportFile('html')
             }
           },
           {
@@ -108,21 +115,21 @@ const buildMenuTemplate = (
             label: 'Package for Canvas',
             accelerator: 'CmdOrCtrl+1',
             click: () => {
-              focusedWindow.webContents.send('menu:export', { format: 'canvas' })
+              exportFile('canvas')
             }
           },
           {
             label: 'Package for Learn 9',
             accelerator: 'CmdOrCtrl+2',
             click: () => {
-              focusedWindow.webContents.send('menu:export', { format: 'learn9' })
+              exportFile('learn9')
             }
           },
           {
             label: 'Package for Moodle',
             accelerator: 'CmdOrCtrl+3',
             click: () => {
-              focusedWindow.webContents.send('menu:export', { format: 'moodle' })
+              exportFile('moodle')
             }
           }
         ]
@@ -164,7 +171,7 @@ const buildMenuTemplate = (
   }
 ]
 
-export const setupAppMenu = (store: Store<RootState>): void => {
+export const setupAppMenu = (store: StoreApi<StoreState>): void => {
   // Get currently focused window
   const focusedWindow = BrowserWindow.getAllWindows()[0]!
 
@@ -181,8 +188,8 @@ export const setupAppMenu = (store: Store<RootState>): void => {
   // Subscribe to store changes
   store.subscribe(updateMenu)
 
-  // App Menu: Handlers
-  app.on('open-file', (_event, path) => {
-    focusedWindow.webContents.send('menu:open', path)
+  // Menu: Open recent handler
+  app.on('open-file', (_event, filePath) => {
+    openFile(filePath)
   })
 }

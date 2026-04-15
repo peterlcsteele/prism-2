@@ -12,6 +12,21 @@ const api = {
   saveFile: () => {
     ipcRenderer.send('save-file')
   },
+  setOutputDir: () => {
+    ipcRenderer.send('settings:set-output-dir')
+  },
+  setLogoPath: () => {
+    ipcRenderer.send('settings:set-logo-path')
+  },
+  clearLogoPath: () => {
+    ipcRenderer.send('settings:clear-logo-path')
+  },
+  setPreRunScript: () => {
+    ipcRenderer.send('settings:set-pre-run-script')
+  },
+  setPostRunScript: () => {
+    ipcRenderer.send('settings:set-post-run-script')
+  },
   // Send events
   showOpenDialog: async (options) => {
     return ipcRenderer.invoke('dialog:show-open-dialog', options)

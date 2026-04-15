@@ -16,6 +16,11 @@ declare global {
       // New
       openFile(filePath?: string): void
       saveFile(): void
+      setOutputDir(): void
+      setLogoPath(): void
+      clearLogoPath(): void
+      setPreRunScript(): void
+      setPostRunScript(): void
       // Dialog
       showOpenDialog(options: OpenDialogOptions): Promise<OpenDialogReturnValue>
       showMessageBox(options: MessageBoxOptions): Promise<MessageBoxReturnValue>

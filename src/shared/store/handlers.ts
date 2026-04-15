@@ -1,38 +1,37 @@
-import type { Handler } from '@zubridge/electron'
 import { store } from '../../main/store'
 
 // A handler is a function that receives the action and has access to the store.
-const setData: Handler = ({ action }) => {
+const setData = ({ action }: { action: { payload: string | null } }) => {
   store.setState((state) => ({
     app: { ...state.app, data: action.payload, hasUnsavedChanges: true }
   }))
 }
 
-const setIsBusy: Handler = ({ action }) => {
+const setIsBusy = ({ action }: { action: { payload: boolean } }) => {
   store.setState((state) => ({
     app: { ...state.app, isBusy: action.payload }
   }))
 }
 
-const clearData: Handler = () => {
+const clearData = () => {
   store.setState((state) => ({
     app: { ...state.app, data: null, currentFilePath: null, hasUnsavedChanges: false }
   }))
 }
 
-const setTheme: Handler = (theme: 'light' | 'dark') => {
+const setTheme = (theme: 'light' | 'dark') => {
   store.setState((state) => ({
     settings: { ...state.settings, theme }
   }))
 }
 
-const setAutoSave: Handler = (autoSave: boolean) => {
+const setAutoSave = (autoSave: boolean) => {
   store.setState((state) => ({
     settings: { ...state.settings, autoSave }
   }))
 }
 
-const addRecentFile: Handler = (newFile: string) => {
+const addRecentFile = (newFile: string) => {
   store.setState((state) => ({
     settings: {
       ...state.settings,
@@ -44,7 +43,7 @@ const addRecentFile: Handler = (newFile: string) => {
   }))
 }
 
-const clearRecentFiles: Handler = () => {
+const clearRecentFiles = () => {
   store.setState((state) => ({
     settings: {
       ...state.settings,

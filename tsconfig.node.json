@@ -7,13 +7,12 @@
     "src/shared/**/*"
   ],
   "compilerOptions": {
-    "baseUrl": ".", // Added by PS
     "composite": true,
     "types": ["electron-vite/node"],
+    "moduleResolution": "bundler",
     "paths": { // Added by PS
-      "@shared/*": ["src/shared/*"],
+      "@shared/*": ["./src/shared/*"],
       "@/*": ["./src/renderer/src/*"]
-    },
-    "moduleResolution": "bundler"
+    }
   }
 }

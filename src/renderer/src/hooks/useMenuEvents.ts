@@ -22,23 +22,26 @@ const { api } = window
 
 export function useMenuEvents(): void {
   // Use store hook
-  const { data, currentFilePath } = useStore((store) => store.app)
+  const { data, currentFilePath, setData, setIsBusy, setCurrentFilePath, clearData } = useStore(
+    (store) => store.app
+  )
+  const { addRecentFile } = useStore((store) => store.settings)
 
   const handleMenuOpen = useCallback(
     async (path: string | undefined) => {
-      setIsBusy!(true)
+      setIsBusy(true)
       try {
         if (!path) {
           path = await showOpenFileDialog()
         }
         if (path) {
           const fileData = await readFile(path)
-          setData!(fileData)
-          setCurrentFilePath!(path)
-          addRecentFile!(path)
+          setData(fileData)
+          setCurrentFilePath(path)
+          addRecentFile(path)
         }
       } finally {
-        setIsBusy!(false)
+        setIsBusy(false)
       }
     },
     [setIsBusy, setData, addRecentFile, setCurrentFilePath]
@@ -46,7 +49,7 @@ export function useMenuEvents(): void {
 
   const handleMenuImport = useCallback(
     async ({ format }: { format: string }) => {
-      setIsBusy!(true)
+      setIsBusy(true)
       try {
         const path = await showImportFileDialog()
         if (path) {
@@ -54,14 +57,14 @@ export function useMenuEvents(): void {
           setData(fileData)
         }
       } finally {
-        setIsBusy!(false)
+        setIsBusy(false)
       }
     },
     [setIsBusy, setData]
   )
 
   const handleMenuClose = useCallback(() => {
-    clearData!()
+    clearData()
   }, [clearData])
 
   const handleMenuSave = useCallback(async () => {
@@ -69,24 +72,24 @@ export function useMenuEvents(): void {
       console.log('No data to save')
       return
     }
-    setIsBusy!(true)
+    setIsBusy(true)
     let path = currentFilePath
     if (!path) {
       path = await showSaveAsDialog()
       if (!path) {
-        setIsBusy!(false)
+        setIsBusy(false)
         return
       }
     }
     try {
       await writeFile(path, data)
-      setCurrentFilePath!(path)
-      addRecentFile!(path)
+      setCurrentFilePath(path)
+      addRecentFile(path)
     } catch (error) {
       console.error('Error saving file:', error)
       await showErrorDialog('Save failed', `Failed to save file: ${error}`)
     } finally {
-      setIsBusy!(false)
+      setIsBusy(false)
     }
   }, [data, currentFilePath, setIsBusy, addRecentFile, setCurrentFilePath])
 
@@ -96,28 +99,28 @@ export function useMenuEvents(): void {
       return
     }
 
-    setIsBusy!(true)
+    setIsBusy(true)
     const path = await showSaveAsDialog()
     if (!path) {
-      setIsBusy!(false)
+      setIsBusy(false)
       return
     }
 
     try {
       await writeFile(path, data as string)
-      setCurrentFilePath!(path)
-      addRecentFile!(path)
+      setCurrentFilePath(path)
+      addRecentFile(path)
     } catch (error) {
       console.error('Error saving file:', error)
       await showErrorDialog('Save failed', `Failed to save file: ${error}`)
     } finally {
-      setIsBusy!(false)
+      setIsBusy(false)
     }
   }, [data, setIsBusy, setCurrentFilePath, addRecentFile])
 
   const handleMenuExport = useCallback(
     async ({ format }: { format: string }) => {
-      setIsBusy!(true)
+      setIsBusy(true)
       try {
         if (!data) return
         const path = await showExportFileDialog(format)
@@ -132,7 +135,7 @@ export function useMenuEvents(): void {
         console.error('Error exporting file:', error)
         await showErrorDialog('Export failed', `Failed to export file: ${error}`)
       } finally {
-        setIsBusy!(false)
+        setIsBusy(false)
       }
     },
     [data, setIsBusy]

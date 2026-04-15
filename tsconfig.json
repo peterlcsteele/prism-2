@@ -1,12 +1,4 @@
 {
   "files": [],
   "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.web.json" }],
-  "compilerOptions": { // Added by PS - Tailwind / shadcn config
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [ // Added by PS - Tailwind / shadcn config
-        "src/renderer/src/*"
-      ]
-    }
-  }
 }

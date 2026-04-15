@@ -2,7 +2,7 @@ import { app, BrowserWindow, Menu, MenuItemConstructorOptions, shell } from 'ele
 import { StoreApi } from 'zustand/vanilla'
 import type { StoreState } from '@shared/types'
 
-import { openFile, importFile, saveFile, showSettings, exportFile } from './mainProcesses'
+import { openFile, importFile, saveFile, exportFile, openSettings } from './mainProcesses'
 
 const buildMenuTemplate = (
   focusedWindow: BrowserWindow,
@@ -20,7 +20,7 @@ const buildMenuTemplate = (
       {
         label: 'Settings...',
         click: () => {
-          showSettings()
+          openSettings()
         }
       },
       {

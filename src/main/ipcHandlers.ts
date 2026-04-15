@@ -21,6 +21,7 @@ import {
   getMachineId,
   openExternal,
   openFile,
+  openSettings,
   openPath,
   quitApp,
   readFile,
@@ -32,7 +33,20 @@ import {
   showItemInFolder,
   unzipArchive,
   writeFile,
-  zipArchive
+  zipArchive,
+  setOutputDir,
+  setLogoPath,
+  clearLogoPath,
+  setPreRunScript,
+  setPostRunScript,
+  importSettings,
+  exportSettings,
+  resetSettings,
+  setOpenAtLogin,
+  getOpenAtLogin,
+  generateAPIKey,
+  writeToClipboard,
+  setAPIServerEnabled
 } from './mainProcesses'
 
 // Types
@@ -79,15 +93,65 @@ export const setupIpcHandlers = (): void => {
     }
   )
 
-  // File
+  // General
+  ipcMain.on('system:write-to-clipboard', (_, text: string) => {
+    writeToClipboard(text)
+  })
+
+  // API Server
+  ipcMain.on('settings:generateAPIKey', async () => {
+    generateAPIKey()
+  })
+  ipcMain.on('api:set-enabled', async (_, isEnabled: boolean) => {
+    setAPIServerEnabled(isEnabled, 'user')
+  })
+  ipcMain.on('settings:open', (_event, payload?: { section?: string }) => {
+    openSettings(payload?.section)
+  })
+
+  // Main
   ipcMain.on('open-file', (_event: IpcMainEvent, filePath: string | null = null): void => {
-    console.log('[ipcMain] open-file')
     openFile(filePath)
   })
-  ipcMain.on('save-file', (_event: IpcMainEvent): void => {
-    console.log('[ipcMain] save-file')
+  ipcMain.on('save-file', (): void => {
     saveFile()
   })
+
+  // Settings
+  ipcMain.handle('system:set-open-at-login', (_event, newValue: boolean) => {
+    return setOpenAtLogin(newValue)
+  })
+  ipcMain.handle('system:get-open-at-login', () => {
+    return getOpenAtLogin()
+  })
+  ipcMain.on('settings:set-output-dir', () => {
+    setOutputDir()
+  })
+  ipcMain.on('settings:set-logo-path', () => {
+    setLogoPath()
+  })
+  ipcMain.on('settings:clear-logo-path', () => {
+    clearLogoPath()
+  })
+  ipcMain.on('settings:set-pre-run-script', () => {
+    setPreRunScript()
+  })
+  ipcMain.on('settings:set-post-run-script', () => {
+    setPostRunScript()
+  })
+  ipcMain.on('settings:set-open-at-login', (_event, value: boolean) => {
+    setOpenAtLogin(value)
+  })
+  ipcMain.on('settings:import', () => {
+    importSettings()
+  })
+  ipcMain.on('settings:export', () => {
+    exportSettings()
+  })
+  ipcMain.on('settings:reset', () => {
+    resetSettings()
+  })
+
   ipcMain.handle(
     'file:download',
     async (_event: IpcMainInvokeEvent, { url, saveAs }: DownloadParams): Promise<boolean> => {

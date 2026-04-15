@@ -1,3 +1,4 @@
+// React Router
 import { createFileRoute } from '@tanstack/react-router'
 
 // Zustand
@@ -5,17 +6,15 @@ import { StoreState } from '@shared/types'
 import { useStore } from '@renderer/hooks/useStore'
 import { useDispatch } from '@zubridge/electron'
 
-// Assets
-// import electronLogo from '../assets/electron.svg'
-
 // Services
 import { showCustomDialog } from '@renderer/services'
-import { ModeToggle } from '@renderer/components/mode-toggle'
 
 // UI
-import { Button } from '@renderer/components/ui/button'
-import { Textarea } from '@renderer/components/ui/textarea'
-import { Spinner } from '@renderer/components/ui/spinner'
+import { Button, Group, Textarea } from '@mantine/core'
+
+// Icons
+import { FaFolderOpen, FaSave } from 'react-icons/fa'
+import Menu from '@renderer/components/menu'
 
 // Hooks
 // import { useMenuEvents } from '@renderer/hooks/useMenuEvents'
@@ -53,25 +52,33 @@ function Index(): React.JSX.Element {
     <div className="app-container">
       {/* Left column - 1/3 width */}
       <div className="sidebar bg-teal">
-        <p className="text-green-700">Testing 20 size font</p>
-        <ModeToggle />
-        <Button onClick={() => api.openFile()} disabled={isBusy}>
-          Open file
-        </Button>
-        <Button onClick={onClickMessageBox} disabled={isBusy}>
-          Show message box
-        </Button>
-        <Button onClick={() => api.saveFile()} disabled={isBusy || !data}>
-          Save file
-        </Button>
+        <Group>
+          <Button leftSection={<FaFolderOpen />} onClick={() => api.openFile()} disabled={isBusy}>
+            Open file
+          </Button>
+          <Button onClick={onClickMessageBox} disabled={isBusy}>
+            Show message box
+          </Button>
+          <Button
+            leftSection={<FaSave />}
+            onClick={() => api.saveFile()}
+            disabled={isBusy || !data}
+          >
+            Save file
+          </Button>
+        </Group>
+        <Menu />
         <div style={{ margin: '10px 0' }}>
-          {isBusy && <Spinner />}
           {data && <p>File loaded: {data.length} characters</p>}
         </div>
       </div>
       {/* Right column - 2/3 width */}
       <div className="main">
-        <Textarea value={data || ''} onChange={(e) => dispatch('app.setData', e.target.value)} />
+        <Textarea
+          h={'100vh'}
+          value={data || 'No data to display yet'}
+          onChange={(e) => dispatch('app.setData', e.target.value)}
+        />
       </div>
     </div>
   )
